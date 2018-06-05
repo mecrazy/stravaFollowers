@@ -20,9 +20,9 @@ style += '.blinking_xyz{-webkit-animation:blink 1.0s ease-in-out infinite altern
 style += '@-webkit-keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style += '@-moz-keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style += '@keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
-style += '.btn_xyz{margin:3px 0px;display:inline-block;padding:5px 3px;border-style:solid;border-width:1px;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);text-shadow:0 1px 0 rgba(0,0,0,0.2);}';
+style += '.btn_xyz{margin:3px 0px;display:inline-block;padding:1px 5px;border-style:solid;border-width:1px;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);text-shadow:0 1px 0 rgba(0,0,0,0.2);}';
 style += '#btn_toggle_link_xyz{color:#ffffff;background:#03A9F4;border-color:#0f9ada;}';
-style += '#btn_toggle_match_xyz{color:#454545;background:#eaeaea;border-color:#9c9c9c;}';
+style += '#btn_toggle_match_xyz,#btn_download_xyz{color:#454545;background:#eaeaea;border-color:#9c9c9c;}';
 style += '#btn_close_xyz{color:#ffffff;background:#fd9535;border-color:#da6202;}';
 style += '</style>';
 
@@ -42,52 +42,89 @@ $.when($('body').append(bg)).done(function(){
 	})
 });
 
-$(document).off('click','#btn_toggle_link_xyz').on('click','#btn_toggle_link_xyz',function(){
-	var tdArr = $('.table-body-xyz').find('td');
-	var action = '';
-	if(tdArr.find('a').length > 0){
-		action='disable'
-	}else{
-		action='enable';
-	}
-	if(action=='enable'){
-		tdArr.each(function(){
-			var athleteName=$(this).text();
-			var athleteId=$(this).attr('data-id');
-			if((athleteName!='')&&(athleteId!='')){
-				$(this).html(
-					$('<a>').attr({'target':'_blank','href':'https://www.strava.com/athletes/' + athleteId}).text(athleteName)
-				);
-			}
-		});
-	}else if(action=='disable'){
-		tdArr.each(function(){
-			var athleteName=$(this).text();
-			var athleteId=$(this).attr('data-id');
-			if((athleteName!='')&&(athleteId!='')){
-				$(this).text(athleteName);
-			}
-		});
-	}
-});
+if($('body').attr('data-event-xyz')!='on'){
 
-$(document).off('click','#btn_close_xyz').on('click','#btn_close_xyz',function(){
-	$('#mylist_xyz').fadeOut(function(){
-		$(this).remove();
-		$('#cutsom_style_xyz').remove();
+	$('body').attr('data-event-xyz','on');
+
+	$(document).on('click','#btn_toggle_link_xyz',function(){
+		var tdArr = $('.table-body-xyz').find('td');
+		var action = '';
+		if(tdArr.find('a').length > 0){
+			action='disable'
+		}else{
+			action='enable';
+		}
+		if(action=='enable'){
+			tdArr.each(function(){
+				var athleteName=$(this).text();
+				var athleteId=$(this).attr('data-id');
+				if((athleteName!='')&&(athleteId!='')){
+					$(this).html(
+						$('<a>').attr({'target':'_blank','href':'https://www.strava.com/athletes/' + athleteId}).text(athleteName)
+					);
+				}
+			});
+		}else if(action=='disable'){
+			tdArr.each(function(){
+				var athleteName=$(this).text();
+				var athleteId=$(this).attr('data-id');
+				if((athleteName!='')&&(athleteId!='')){
+					$(this).text(athleteName);
+				}
+			});
+		}
 	});
-});
 
-$(document).off('click','#btn_toggle_match_xyz').on('click','#btn_toggle_match_xyz',function(){
-	var mode = $(this).attr('data-mode');
-	if(mode=='all'){
-		$(this).attr('data-mode','unmatch').text('SHOW ALL');
-		$('.match-xyz').hide();
-	}else if(mode=='unmatch'){
-		$(this).attr('data-mode','all').text('SHOW UNMATCH');
-		$('.match-xyz').show();
-	}
-});
+	$(document).on('click','#btn_close_xyz',function(){
+		$('#mylist_xyz').fadeOut(function(){
+			$(this).remove();
+			$('#cutsom_style_xyz').remove();
+		});
+	});
+
+	$(document).on('click','#btn_toggle_match_xyz',function(){
+		var mode = $(this).attr('data-mode');
+		if(mode=='all'){
+			$(this).attr('data-mode','unmatch').text('SHOW ALL');
+			$('.match-xyz').hide();
+		}else if(mode=='unmatch'){
+			$(this).attr('data-mode','all').text('SHOW UNMATCH');
+			$('.match-xyz').show();
+		}
+	});
+
+	$(document).on('click','#btn_download_xyz',function(){
+		var lineArr={"following":[],"followers":[],"id":[]};
+		$('.table-xyz tbody').find('tr').each(function(){
+			var status = $(this).css('display');
+			if(status != 'none'){
+				var rowData = {"following":$(this).find('td').eq(0).text(),"followers":$(this).find('td').eq(1).text(),"id":""};
+				rowData.following=rowData.following.replace('"','""');
+				rowData.followers=rowData.followers.replace('"','""');
+				if($(this).find('td').eq(0).attr("data-id")!=''){rowData.id=$(this).find('td').eq(0).attr("data-id")}
+				if($(this).find('td').eq(1).attr("data-id")!=''){rowData.id=$(this).find('td').eq(1).attr("data-id")}
+				lineArr.following.push(rowData.following);
+				lineArr.followers.push(rowData.followers);
+				lineArr.id.push(rowData.id);
+			}
+		}).eq(0).each(function(){
+			var delimiter = ",";
+			var crlf = "\r\n";
+			var csv = delimiter + '"following"' + delimiter + '"followers"' + delimiter + '"link"';
+			for(var i=0;i<lineArr.following.length;i++){
+				var rowNum = i+1;
+				csv += crlf + rowNum + delimiter + '"' + lineArr.following[i] + '"' + delimiter + '"' + lineArr.followers[i] + '"' + delimiter + 'https://www.strava.com/athletes/' + lineArr.id[i];
+			}
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(new Blob([csv]));
+			var filename = dateFormat.format(new Date(),'yyyyMMddhhmmss');
+			filename = 'strava_follers_' + filename + '.csv';
+			link.download = filename;
+			link.click();
+		});
+	});
+
+}
 
 function start(){
 	$.ajax({url:io.dashboard,dataType:'html'}).done(function(data){
@@ -149,7 +186,6 @@ function analyzePager(html){
 
 function complete(io){
 	$('#pregress_xyz').fadeOut().remove();
-	console.log('complete',io);
 	var tableSrc = generateTable(io);
 	$('body').append(
 		$('<div>').attr({'id':'mylist_xyz'}).append(tableSrc)
@@ -162,7 +198,8 @@ function generateTable(io){
 	table += '<tr><th class="cell-xyz" colspan="2" style="text-align:center;background-color:#b0e0e6;">';
 	table += '<button class="btn_xyz" id="btn_toggle_link_xyz">TOGGLE LINK</button>&nbsp;';
 	table += '<button class="btn_xyz" id="btn_toggle_match_xyz" data-mode="all">SHOW UNMATCH</button>&nbsp;';
-	table += '<button class="btn_xyz" id="btn_close_xyz">CLOSE THIS TABLE</button>';
+	table += '<button class="btn_xyz" id="btn_download_xyz">DOWNLOAD CSV</button>&nbsp;';
+	table += '<button class="btn_xyz" id="btn_close_xyz">CLOSE</button>';
 	table += '</th></tr>';
 	table += '<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">following</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">followers</th></tr>';
 	table += '</thead>';
@@ -202,5 +239,28 @@ function generateTable(io){
 	table += '</table>';
 	return table;
 }
+
+var dateFormat={
+	_fmt:{
+		hh:function(date){ return ('0' + date.getHours()).slice(-2); },
+		h:function(date){ return date.getHours(); },
+		mm:function(date){ return ('0' + date.getMinutes()).slice(-2); },
+		m:function(date){ return date.getMinutes(); },
+		ss:function(date){ return ('0' + date.getSeconds()).slice(-2); },
+		dd:function(date){ return ('0' + date.getDate()).slice(-2); },
+		d:function(date){ return date.getDate(); },
+		s:function(date){ return date.getSeconds(); },
+		yyyy:function(date){ return date.getFullYear() + ''; },
+		yy:function(date){ return date.getYear() + ''; },
+		t:function(date){ return date.getDate()<=3 ? ["st", "nd", "rd"][date.getDate()-1]: 'th'; },
+		w:function(date){return ["Sun", "$on", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()]; },
+		MMMM:function(date){ return ["January", "February", "$arch", "April", "$ay", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()]; },
+		MMM:function(date){return ["Jan", "Feb", "$ar", "Apr", "$ay", "Jun", "Jly", "Aug", "Spt", "Oct", "Nov", "Dec"][date.getMonth()]; },  
+		MM:function(date){ return ('0' + (date.getMonth() + 1)).slice(-2); },
+		M:function(date){ return date.getMonth() + 1; },
+		$:function(date){return 'M';}
+	},_priority:["hh","h","mm","m","ss","dd","d","s","yyyy","yy","t","w","MMMM","MMM","MM","M","$"],
+	format:function(date,format){return this._priority.reduce((res,fmt)=>res.replace(fmt,this._fmt[fmt](date)),format)}
+};
 
 });
