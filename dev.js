@@ -225,10 +225,12 @@ function generateTable(io){
 			}
 		}else if( (io.following.length >= (pos.following + 1)) && (io.followers.length < (pos.followers + 1)) ){
 			var nameFollowing = io.following[pos.following];
+			var idFollowing = io.followingId[pos.following];
 			table += '<tr class="unmatch-xyz"><td class="cell-xyz" data-id="' + idFollowing + '">' + nameFollowing + '</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
 			pos.following++;
 		}else if( (io.following.length < (pos.following + 1)) && (io.followers.length >= (pos.followers + 1)) ){
 			var nameFollowers = io.followers[pos.followers];
+			var idFollowers = io.followersId[pos.followers];
 			table += '<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="' + idFollowers + '">' + nameFollowers + '</td></tr>';
 			pos.followers++;
 		}else{
