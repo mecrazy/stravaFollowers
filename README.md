@@ -11,7 +11,7 @@ It attach or remove links to user pages on user names.
 It can extract users.  
   
 **< DOWNLOAD CSV >**  
-You can download your list as a CSV. When you extract list, it is also extracted.  
+You can download your list as a CSV. When you extract the list, it is also extracted.  
   
 **< CLOSE >**  
 It close these function.
