@@ -1,9 +1,39 @@
 javascript:(function(func){
 
-var scr=document.createElement("script");scr.src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
-scr.onload=function(){func(jQuery.noConflict(true))};
+var jqVer={"$":{"full":"","sep":[],"match":false},"jQuery":{"full":"","sep":[],"match":false}};
+if(typeof($)!='undefined'){jqVer.$.full=$().jquery}
+if(typeof(jQuery)!='undefined'){jqVer.jQuery.full=jQuery().jquery}
+var tempMatch=jqVer.$.full.match(/^([0-9]+)\.([0-9]+)\.([0-9]+)$/);
+if(tempMatch!=null){jqVer.$.match=true;jqVer.$.sep.push(Number(tempMatch[1]));jqVer.$.sep.push(Number(tempMatch[2]));jqVer.$.sep.push(Number(tempMatch[3]))}
+tempMatch=jqVer.jQuery.full.match(/^([0-9]+)\.([0-9]+)\.([0-9]+)$/);
+if(tempMatch!=null){jqVer.jQuery.match=true;jqVer.jQuery.sep.push(Number(tempMatch[1]));jqVer.jQuery.sep.push(Number(tempMatch[2]));jqVer.jQuery.sep.push(Number(tempMatch[3]))}
 
-document.body.appendChild(scr)
+var appendNewJQ=true;
+if(jqVer.$.match||jqVer.jQuery.match){
+	if(jqVer.$.match){
+		if(jqVer.$.sep[0]>=2){
+			if(jqVer.$.sep[1]>=1){
+				appendNewJQ=false;
+				func($)
+			}
+		}
+	}
+	if(appendNewJQ){
+		if(jqVer.jQuery.match){
+			if(jqVer.jQuery.sep[0]>=2){
+				if(jqVer.jQuery.sep[1]>=1){
+					appendNewJQ=false;
+					func(jQuery)
+				}
+			}
+		}
+	}
+}
+if(appendNewJQ){
+	var scr=document.createElement("script");scr.src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+	scr.onload=function(){func(jQuery.noConflict(true))};
+	document.body.appendChild(scr)
+}
 
 })
 
