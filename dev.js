@@ -61,6 +61,12 @@ style+='#btn_toggle_match_xyz,#btn_download_xyz{color:#454545;background:#eaeaea
 style+='#btn_close_xyz{color:#ffffff;background:#fd9535;border-color:#da6202;}';
 style+='</style>';
 
+var lang=detectLang();
+var strings={
+	"en":{"starting":"Starting ....","analyzingFollowing":"Analyzing following","analyzingFollowers":"Analyzing followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCH","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
+	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザを解析中","analyzingFollowers":"あなたをフォローするユーザを解析中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"}
+};
+
 if($('#cutsom_style_xyz').length>0){$('#cutsom_style_xyz').remove()}
 $('head').append(style);
 
@@ -69,7 +75,7 @@ var io={"dashboard":"https://www.strava.com/dashboard","user":"","base":"","foll
 var bg=$('<div>').attr('id','pregress_xyz').append(
 	$('<div>').attr('id','blinking_outer_a_xyz').append(
 		$('<div>').attr('id','blinking_outer_b_xyz').append(
-			$('<div>').attr('id','blinking_text_xyz').addClass('blinking_xyz').text('Starting ....')
+			$('<div>').attr('id','blinking_text_xyz').addClass('blinking_xyz').text(strings[lang].starting)
 		).append(
 			$('<div>').attr('id','progressbar_outer_xyz').append(
 				$('<div>').attr('id','progressbar_inner_a_xyz').append(
@@ -130,10 +136,10 @@ if($('body').attr('data-event-xyz')!='on'){
 	$(document).on('click','#btn_toggle_match_xyz',function(){
 		var mode=$(this).attr('data-mode');
 		if(mode=='all'){
-			$(this).attr('data-mode','unmatch').text('SHOW ALL');
+			$(this).attr('data-mode','unmatch').text(strings[lang].btnShowAll);
 			$('.match-xyz').hide()
 		}else if(mode=='unmatch'){
-			$(this).attr('data-mode','all').text('SHOW UNMATCH');
+			$(this).attr('data-mode','all').text(strings[lang].btnShowUnmatch);
 			$('.match-xyz').show()
 		}
 	});
@@ -186,7 +192,11 @@ function start(){
 }
 
 function analyzeMain(mode,io,page){
-	$('#blinking_text_xyz').text('Analyzing '+mode+' ....');
+	if(mode=='following'){
+		$('#blinking_text_xyz').text(strings[lang].analyzingFollowing)
+	}else if(mode=='followers'){
+		$('#blinking_text_xyz').text(strings[lang].analyzingFollowers)
+	}
 	var startUrl=io.base+'?type='+mode+'&page='+page;
 	$.ajax({url:startUrl,dataType:'html'}).done(function(data){
 		var pager=analyzePager(data);
@@ -240,12 +250,12 @@ function generateTable(io){
 	var table='<table class="table-xyz">';
 	table+='<thead>';
 	table+='<tr><th class="cell-xyz" colspan="2" style="text-align:center;background-color:#b0e0e6;">';
-	table+='<button class="btn_xyz" id="btn_toggle_link_xyz">TOGGLE LINK</button>&nbsp;';
-	table+='<button class="btn_xyz" id="btn_toggle_match_xyz" data-mode="all">SHOW UNMATCH</button>&nbsp;';
-	table+='<button class="btn_xyz" id="btn_download_xyz">DOWNLOAD CSV</button>&nbsp;';
-	table+='<button class="btn_xyz" id="btn_close_xyz">CLOSE</button>';
+	table+='<button class="btn_xyz" id="btn_toggle_link_xyz">'+strings[lang].btnToggleLink+'</button>&nbsp;';
+	table+='<button class="btn_xyz" id="btn_toggle_match_xyz" data-mode="all">'+strings[lang].btnShowUnmatch+'</button>&nbsp;';
+	table+='<button class="btn_xyz" id="btn_download_xyz">'+strings[lang].btnDownloadCsv+'</button>&nbsp;';
+	table+='<button class="btn_xyz" id="btn_close_xyz">'+strings[lang].btnClose+'</button>';
 	table+='</th></tr>';
-	table+='<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">following</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">followers</th></tr>';
+	table+='<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].following+'</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].followers+'</th></tr>';
 	table+='</thead>';
 	table+='<tbody class="table-body-xyz">';
 	var pos={'following':0,'followers':0};
@@ -283,6 +293,19 @@ function generateTable(io){
 	}
 	table+='</tbody></table>';
 	return table
+}
+
+function detectLang(){
+	var lang=(window.navigator.languages&&window.navigator.languages[0])||
+		window.navigator.language||
+		window.navigator.userLanguage||
+		window.navigator.browserLanguage;
+	if(lang.match(/^ja(\-[a-zA-Z]+)?/i)){
+		lang='ja'
+	}else{
+		lang='en'
+	}
+	return lang
 }
 
 var dateFormat={
