@@ -8,28 +8,28 @@ if(tempMatch!=null){jqVer.$.match=true;jqVer.$.sep.push(Number(tempMatch[1]));jq
 tempMatch=jqVer.jQuery.full.match(/^([0-9]+)\.([0-9]+)\.([0-9]+)$/);
 if(tempMatch!=null){jqVer.jQuery.match=true;jqVer.jQuery.sep.push(Number(tempMatch[1]));jqVer.jQuery.sep.push(Number(tempMatch[2]));jqVer.jQuery.sep.push(Number(tempMatch[3]))}
 
-var appendNewJQ=true;
+var newJQ=true;
 if(jqVer.$.match||jqVer.jQuery.match){
 	if(jqVer.$.match){
 		if(jqVer.$.sep[0]>=2){
 			if(jqVer.$.sep[1]>=1){
-				appendNewJQ=false;
+				newJQ=false;
 				func($)
 			}
 		}
 	}
-	if(appendNewJQ){
+	if(newJQ){
 		if(jqVer.jQuery.match){
 			if(jqVer.jQuery.sep[0]>=2){
 				if(jqVer.jQuery.sep[1]>=1){
-					appendNewJQ=false;
+					newJQ=false;
 					func(jQuery)
 				}
 			}
 		}
 	}
 }
-if(appendNewJQ){
+if(newJQ){
 	var scr=document.createElement("script");scr.src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
 	scr.onload=function(){func(jQuery.noConflict(true))};
 	document.body.appendChild(scr)
@@ -59,9 +59,9 @@ style+='</style>';
 if($('#cutsom_style_xyz').length>0){$('#cutsom_style_xyz').remove()}
 $('head').append(style);
 
-var io = {"dashboard":"https://www.strava.com/dashboard","user":"","base":"","followers":[],"followersId":[],"following":[],"followingId":[]};
+var io={"dashboard":"https://www.strava.com/dashboard","user":"","base":"","followers":[],"followersId":[],"following":[],"followingId":[]};
 
-var bg = $('<div>').attr({'id':'pregress_xyz'}).append(
+var bg=$('<div>').attr({'id':'pregress_xyz'}).append(
 	$('<div>').addClass('blinking_xyz').text('Analyzing ....')
 );
 
@@ -77,9 +77,9 @@ if($('body').attr('data-event-xyz')!='on'){
 	$('body').attr('data-event-xyz','on');
 
 	$(document).on('click','#btn_toggle_link_xyz',function(){
-		var tdArr = $('.table-body-xyz').find('td');
-		var action = '';
-		if(tdArr.find('a').length > 0){
+		var tdArr=$('.table-body-xyz').find('td');
+		var action='';
+		if(tdArr.find('a').length>0){
 			action='disable'
 		}else{
 			action='enable'
@@ -93,7 +93,7 @@ if($('body').attr('data-event-xyz')!='on'){
 						$('<a>').attr({'target':'_blank','href':'https://www.strava.com/athletes/'+athleteId}).text(athleteName)
 					)
 				}
-			});
+			})
 		}else if(action=='disable'){
 			tdArr.each(function(){
 				var athleteName=$(this).text();
@@ -113,7 +113,7 @@ if($('body').attr('data-event-xyz')!='on'){
 	});
 
 	$(document).on('click','#btn_toggle_match_xyz',function(){
-		var mode = $(this).attr('data-mode');
+		var mode=$(this).attr('data-mode');
 		if(mode=='all'){
 			$(this).attr('data-mode','unmatch').text('SHOW ALL');
 			$('.match-xyz').hide()
@@ -128,7 +128,7 @@ if($('body').attr('data-event-xyz')!='on'){
 		$('.table-xyz tbody').find('tr').each(function(){
 			var status=$(this).css('display');
 			if(status!='none'){
-				var rowData = {"following":$(this).find('td').eq(0).text(),"followers":$(this).find('td').eq(1).text(),"id":""};
+				var rowData={"following":$(this).find('td').eq(0).text(),"followers":$(this).find('td').eq(1).text(),"id":""};
 				rowData.following=rowData.following.replace('"','""');
 				rowData.followers=rowData.followers.replace('"','""');
 				if($(this).find('td').eq(0).attr("data-id")!=''){rowData.id=$(this).find('td').eq(0).attr("data-id")}
@@ -142,17 +142,17 @@ if($('body').attr('data-event-xyz')!='on'){
 			var crlf="\r\n";
 			var csv=dmt+'"following"'+dmt+'"followers"'+dmt+'"link"';
 			for(var i=0;i<lineArr.following.length;i++){
-				var rowNum = i+1;
-				csv += crlf + rowNum + dmt + '"' + lineArr.following[i] + '"' + dmt + '"' + lineArr.followers[i] + '"' + dmt + 'https://www.strava.com/athletes/' + lineArr.id[i]
+				var rowNum=i+1;
+				csv+=crlf+rowNum+dmt+'"'+lineArr.following[i]+'"'+dmt+'"'+lineArr.followers[i]+'"'+dmt+'https://www.strava.com/athletes/'+lineArr.id[i]
 			}
 			var link=document.createElement('a');
 			link.href=window.URL.createObjectURL(new Blob([csv]));
 			var filename=dateFormat.format(new Date(),'yyyyMMddhhmmss');
 			filename='strava_follers_'+filename+'.csv';
-			link.download = filename;
+			link.download=filename;
 			link.click()
 		})
-	});
+	})
 
 }
 
@@ -166,8 +166,8 @@ function start(){
 		analyzeMain('following',io,1)
 	}).fail(function(jqXHR,textStatus,errorThrown){
 		console.log(jqXHR,textStatus,errorThrown);
-		alert('Failed to get data from "' + io.dashboard + '".')
-	});
+		alert('Failed to get data from "'+io.dashboard+'".')
+	})
 }
 
 function analyzeMain(mode,io,page){
@@ -179,42 +179,42 @@ function analyzeMain(mode,io,page){
 			io[mode].push(name);
 			io[mode+'Id'].push(athleteId)
 		});
-		var pager = analyzePager(data);
-		if(pager.max > pager.current){
+		var pager=analyzePager(data);
+		if(pager.max>pager.current){
 			page++;
 			analyzeMain(mode,io,page)
 		}else{
-			if(mode == 'following'){
+			if(mode=='following'){
 				analyzeMain('followers',io,1)
 			}else{
 				complete(io)
 			}
 		}
-	});
+	})
 }
 
 function analyzePager(html){
 	var pager={"min":1,"max":0,"current":0};
 	$(html).find('.pagination').eq(0).find('li').each(function(){
-		var page = -1;
-		var pageStr = $(this).find('a,span').text();
-		pageStr = pageStr.trim();
+		var page=-1;
+		var pageStr=$(this).find('a,span').text();
+		pageStr=pageStr.trim();
 		if(pageStr.match(/^[0-9]+$/)){
 			if($(this).find('a').length>0){
-				page = Number($(this).find('a').text())
+				page=Number($(this).find('a').text())
 			}else if($(this).find('span').length > 0){
-				page = Number($(this).find('span').text())
+				page=Number($(this).find('span').text())
 			}
-			pager["max"] = page;
-			if($(this).hasClass('active')){pager["current"] = page}
+			pager["max"]=page;
+			if($(this).hasClass('active')){pager["current"]=page}
 		}
 	});
-	return pager;
+	return pager
 }
 
 function complete(io){
 	$('#pregress_xyz').fadeOut().remove();
-	var tableSrc = generateTable(io);
+	var tableSrc=generateTable(io);
 	$('body').append($('<div>').attr({'id':'mylist_xyz'}).append(tableSrc))
 }
 
@@ -230,10 +230,10 @@ function generateTable(io){
 	table+='<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">following</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">followers</th></tr>';
 	table+='</thead>';
 	table+='<tbody class="table-body-xyz">';
-	var pos = {'following':0,'followers':0};
-	var loop = true;
+	var pos={'following':0,'followers':0};
+	var loop=true;
 	while(loop){
-		if( (io.following.length >= (pos.following + 1)) && (io.followers.length >= (pos.followers + 1)) ){
+		if((io.following.length>=(pos.following+1))&&(io.followers.length>=(pos.followers+1))){
 			var nameFollowing=io.following[pos.following];
 			var nameFollowers=io.followers[pos.followers];
 			var idFollowing=io.followingId[pos.following];
@@ -241,30 +241,30 @@ function generateTable(io){
 			if(nameFollowing==nameFollowers){
 				table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
 				pos.following++;
-				pos.followers++;
+				pos.followers++
 			}else if(nameFollowing<nameFollowers){
 				table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
-				pos.following++;
+				pos.following++
 			}else if(nameFollowing>nameFollowers){
 				table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
-				pos.followers++;
+				pos.followers++
 			}
 		}else if((io.following.length>=(pos.following+1))&&(io.followers.length<(pos.followers+1))){
 			var nameFollowing=io.following[pos.following];
 			var idFollowing=io.followingId[pos.following];
-			table += '<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
-			pos.following++;
+			table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
+			pos.following++
 		}else if((io.following.length<(pos.following+1))&&(io.followers.length>=(pos.followers+1))){
 			var nameFollowers=io.followers[pos.followers];
 			var idFollowers=io.followersId[pos.followers];
-			table += '<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="' + idFollowers + '">' + nameFollowers + '</td></tr>';
-			pos.followers++;
+			table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
+			pos.followers++
 		}else{
-			loop = false;
+			loop=false
 		}
 	}
 	table+='</tbody></table>';
-	return table;
+	return table
 }
 
 var dateFormat={
@@ -283,11 +283,11 @@ var dateFormat={
 		w:function(date){return ["Sun","$on","Tue","Wed","Thu","Fri","Sat"][date.getDay()]},
 		MMMM:function(date){return ["January","February","$arch","April","$ay","June","July","August","September","October","November","December"][date.getMonth()]},
 		MMM:function(date){return ["Jan","Feb","$ar","Apr","$ay","Jun","Jly","Aug","Spt","Oct","Nov","Dec"][date.getMonth()]},
-		MM:function(date){return ('0'+(date.getMonth() + 1)).slice(-2)},
+		MM:function(date){return ('0'+(date.getMonth()+1)).slice(-2)},
 		M:function(date){return date.getMonth()+1},
 		$:function(date){return 'M'}
 	},_priority:["hh","h","mm","m","ss","dd","d","s","yyyy","yy","t","w","MMMM","MMM","MM","M","$"],
 	format:function(date,format){return this._priority.reduce((res,fmt)=>res.replace(fmt,this._fmt[fmt](date)),format)}
-};
+}
 
 });
