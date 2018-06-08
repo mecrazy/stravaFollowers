@@ -17,5 +17,4 @@ You can download your list as a CSV. When you extract the list, it is also extra
 It close these function.
 ***
 **LANGUAGES**  
-Native developed languages are English and Japanese.  
-I optionally added Russian and Chinese, but I used Google Translation to translate. If you can translate manually, please fix these languages.
+My native language is Japanese. If you find any strange words in other languages, please fix these words.
