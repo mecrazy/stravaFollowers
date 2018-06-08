@@ -63,8 +63,10 @@ style+='</style>';
 
 var lang=detectLang();
 var strings={
-	"en":{"starting":"Starting ....","analyzingFollowing":"Analyzing following","analyzingFollowers":"Analyzing followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCH","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
-	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザを解析中","analyzingFollowers":"あなたをフォローするユーザを解析中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"}
+	"en":{"starting":"Starting ....","analyzingFollowing":"Analyzing following","analyzingFollowers":"Analyzing followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCHED","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
+	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザを解析中","analyzingFollowers":"あなたをフォローするユーザを解析中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"},
+	"ru":{"starting":"начало ....","analyzingFollowing":"Анализ следующих","analyzingFollowers":"Анализ последователей","following":"следующих","followers":"последователей","btnToggleLink":"Вкл выкл связи","btnShowUnmatch":"ПОКАЖИТЕ НЕОПРЕДЕЛЕННЫЙ","btnShowAll":"ПОКАЗАТЬ ВСЕ","btnDownloadCsv":"СКАЧАТЬ CSV","btnClose":"ЗАКРЫТЬ"},
+	"zh":{"starting":"Starting ....","analyzingFollowing":"分析如下","analyzingFollowers":"分析追随者","following":"如下","followers":"追随者","btnToggleLink":"链接开关","btnShowUnmatch":"显示不匹配的","btnShowAll":"显示所有","btnDownloadCsv":"下载CSV","btnClose":"关"},
 };
 
 if($('#cutsom_style_xyz').length>0){$('#cutsom_style_xyz').remove()}
@@ -302,6 +304,10 @@ function detectLang(){
 		window.navigator.browserLanguage;
 	if(lang.match(/^ja(\-[a-zA-Z]+)?/i)){
 		lang='ja'
+	}else if(lang.match(/^ru(\-[a-zA-Z]+)?/i)){
+		lang='ru'
+	}else if(lang.match(/^zh(\-[a-zA-Z]+)?/i)){
+		lang='zh'
 	}else{
 		lang='en'
 	}
