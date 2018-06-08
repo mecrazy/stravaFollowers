@@ -45,8 +45,13 @@ style+='#mylist_xyz{box-shadow:-3px 6px 5px;width:48%;height:70%;overflow-y:scro
 style+='.cell-xyz{margin:0px;padding:3px 5px;border-style:solid;border-color:#afafaf;border-width:1px 0px 0px 1px;}';
 style+='.cell-xyz-blank{background-color:#eaeaea;}';
 style+='.table-xyz{margin:0px;padding:0px;background-color:#ffffff;border-collapse:collapse;border-style:solid;border-color:#afafaf;border-width:0px 1px 1px 0px;width:100%;}';
-style+='.blinking_xyz{font-size:24px;text-align:center;position:relative;top:50%;display:block;width:100%;height:24px;margin:0px auto;}';
+style+='#blinking_outer_a_xyz{position:relative;width:100%;height:100%;margin:0px;padding:0px;}';
+style+='#blinking_outer_b_xyz{position:absolute;top:0px;right:0px;bottom:0px;left:0px;display:block;width:70%;height:48px;margin:auto;}';
+style+='.blinking_xyz{font-size:24px;text-align:center;display:block;width:100%;height:32px;line-height:32px;margin:0px auto;}';
 style+='.blinking_xyz{-webkit-animation:blink 1.0s ease-in-out infinite alternate;-moz-animation:blink 1.0s ease-in-out infinite alternate;animation:blink 1.0s ease-in-out infinite alternate;}';
+style+='#progressbar_outer_xyz{text-align:center;display:block;width:100%;height:18px;line-height:18px;margin:5px 0px 0px 0px;padding:0px;border-radius:6px;background-color:#ffffff;overflow:hidden;}';
+style+='#progressbar_inner_a_xyz{text-align:center;display:block;height:14px;line-height:14px;margin:2px;padding:0px;border-radius:8px;background-color:transparent;overflow:hidden;}';
+style+='#progressbar_inner_b_xyz{text-align:center;display:block;width:0%;height:14px;line-height:14px;margin:0px;padding:0px;border-radius:8px;background-color:#000000;overflow:visible;font-size:12px;}';
 style+='@-webkit-keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style+='@-moz-keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style+='@keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
@@ -61,8 +66,18 @@ $('head').append(style);
 
 var io={"dashboard":"https://www.strava.com/dashboard","user":"","base":"","followers":[],"followersId":[],"following":[],"followingId":[]};
 
-var bg=$('<div>').attr({'id':'pregress_xyz'}).append(
-	$('<div>').addClass('blinking_xyz').text('Analyzing ....')
+var bg=$('<div>').attr('id','pregress_xyz').append(
+	$('<div>').attr('id','blinking_outer_a_xyz').append(
+		$('<div>').attr('id','blinking_outer_b_xyz').append(
+			$('<div>').attr('id','blinking_text_xyz').addClass('blinking_xyz').text('Starting ....')
+		).append(
+			$('<div>').attr('id','progressbar_outer_xyz').append(
+				$('<div>').attr('id','progressbar_inner_a_xyz').append(
+					$('<div>').attr('id','progressbar_inner_b_xyz').css("width","0%").text('0%')
+				)
+			)
+		)
+	)
 );
 
 $('#mylist_xyz').remove();
@@ -171,15 +186,18 @@ function start(){
 }
 
 function analyzeMain(mode,io,page){
+	$('#blinking_text_xyz').text('Analyzing '+mode+' ....');
 	var startUrl=io.base+'?type='+mode+'&page='+page;
 	$.ajax({url:startUrl,dataType:'html'}).done(function(data){
+		var pager=analyzePager(data);
 		$(data).find('.list-athletes').children().each(function(){
 			var name=$(this).find('div.avatar-athlete').attr('title');
 			var athleteId=$(this).attr('data-athlete-id');
 			io[mode].push(name);
-			io[mode+'Id'].push(athleteId)
+			io[mode+'Id'].push(athleteId);
 		});
-		var pager=analyzePager(data);
+		var percentile = Math.floor((pager.current/pager.max)*100);
+		$('#progressbar_inner_b_xyz').css('width',percentile+'%').text(percentile+'%');
 		if(pager.max>pager.current){
 			page++;
 			analyzeMain(mode,io,page)
