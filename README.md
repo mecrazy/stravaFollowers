@@ -1,5 +1,5 @@
 # stravaFollowers
-![stravafollowers_capture](https://user-images.githubusercontent.com/4317778/41036052-a2d4af16-69c9-11e8-8010-1e965d6ecc64.gif)  
+![stravafollowers_capture](https://user-images.githubusercontent.com/4317778/41466673-396c72a4-70de-11e8-9432-b61cf0a4e5eb.gif)  
 ***
 This is a bookmarklet for [Strava](https://www.strava.com). Copy the source of "bookmarklet.js" to your bookmark.   
 When you execute it on [Strava](https://www.strava.com), it shows you lists of your following and followers. You can also download the list as a CSV.
