@@ -7,7 +7,7 @@ When you execute it on [Strava](https://www.strava.com), it shows you lists of y
 **< TOGGLE LINK >**  
 It attach or remove links to user pages on user names.  
   
-**< SHOW UNMATCH / SHOW ALL >**  
+**< SHOW UNMATCHED / SHOW ALL >**  
 It can extract users on lists.  
   
 **< DOWNLOAD CSV >**  
