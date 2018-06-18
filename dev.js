@@ -209,15 +209,18 @@ function analyzeMain(mode,io,page){
 			io[mode+'Id'].push(athleteId);
 		});
 		var percentile = Math.floor((pager.current/pager.max)*100);
-		$('#progressbar_inner_b_xyz').animate({'width':percentile+'%'}).text(percentile+'%');
-		if(pager.max>pager.current){
-			page++;
-			analyzeMain(mode,io,page)
-		}else{
-			if(mode=='following'){
-				analyzeMain('followers',io,1)
+		var lastFlg=((pager.max<=pager.current)&&(mode=='followers'));
+		$('#progressbar_inner_b_xyz').text(percentile+'%').animate({'width':percentile+'%'},function(){
+			if(lastFlg){complete(io)}
+		});
+		if(!lastFlg){
+			if(pager.max>pager.current){
+				page++;
+				analyzeMain(mode,io,page)
 			}else{
-				complete(io)
+				if(mode=='following'){
+					analyzeMain('followers',io,1)
+				}
 			}
 		}
 	})
