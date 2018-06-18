@@ -209,7 +209,7 @@ function analyzeMain(mode,io,page){
 			io[mode+'Id'].push(athleteId);
 		});
 		var percentile = Math.floor((pager.current/pager.max)*100);
-		$('#progressbar_inner_b_xyz').css('width',percentile+'%').text(percentile+'%');
+		$('#progressbar_inner_b_xyz').animate({'width':percentile+'%'}).text(percentile+'%');
 		if(pager.max>pager.current){
 			page++;
 			analyzeMain(mode,io,page)
