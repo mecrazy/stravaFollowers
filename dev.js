@@ -63,10 +63,10 @@ style+='</style>';
 
 var lang=detectLang();
 var strings={
-	"en":{"starting":"Starting ....","analyzingFollowing":"Analyzing following","analyzingFollowers":"Analyzing followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCHED","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
-	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザを解析中","analyzingFollowers":"あなたをフォローするユーザを解析中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"},
-	"ru":{"starting":"начало ....","analyzingFollowing":"Анализ следующих","analyzingFollowers":"Анализ последователей","following":"следующих","followers":"последователей","btnToggleLink":"Вкл выкл связи","btnShowUnmatch":"ПОКАЖИТЕ НЕОПРЕДЕЛЕННЫЙ","btnShowAll":"ПОКАЗАТЬ ВСЕ","btnDownloadCsv":"СКАЧАТЬ CSV","btnClose":"ЗАКРЫТЬ"},
-	"zh":{"starting":"开始 ....","analyzingFollowing":"分析如下","analyzingFollowers":"分析追随者","following":"如下","followers":"追随者","btnToggleLink":"链接开关","btnShowUnmatch":"显示不匹配的","btnShowAll":"显示所有","btnDownloadCsv":"下载CSV","btnClose":"关"},
+	"en":{"starting":"Starting ....","analyzingFollowing":"Counting followings","analyzingFollowers":"Counting followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCHED","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
+	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザをカウント中","analyzingFollowers":"あなたをフォローするユーザをカウント中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"},
+	"ru":{"starting":"начало ....","analyzingFollowing":"Подсчет голосов","analyzingFollowers":"Подсчет подписчиков","following":"следующих","followers":"последователей","btnToggleLink":"Вкл выкл связи","btnShowUnmatch":"ПОКАЖИТЕ НЕОПРЕДЕЛЕННЫЙ","btnShowAll":"ПОКАЗАТЬ ВСЕ","btnDownloadCsv":"СКАЧАТЬ CSV","btnClose":"ЗАКРЫТЬ"},
+	"zh":{"starting":"开始 ....","analyzingFollowing":"计数如下","analyzingFollowers":"计数粉丝","following":"如下","followers":"追随者","btnToggleLink":"链接开关","btnShowUnmatch":"显示不匹配的","btnShowAll":"显示所有","btnDownloadCsv":"下载CSV","btnClose":"关"},
 };
 
 if($('#cutsom_style_xyz').length>0){$('#cutsom_style_xyz').remove()}
@@ -263,37 +263,24 @@ function generateTable(io){
 	table+='<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].following+'</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].followers+'</th></tr>';
 	table+='</thead>';
 	table+='<tbody class="table-body-xyz">';
-	var pos={'following':0,'followers':0};
-	var loop=true;
-	while(loop){
-		if((io.following.length>=(pos.following+1))&&(io.followers.length>=(pos.followers+1))){
-			var nameFollowing=io.following[pos.following];
-			var nameFollowers=io.followers[pos.followers];
-			var idFollowing=io.followingId[pos.following];
-			var idFollowers=io.followersId[pos.followers];
-			if(nameFollowing==nameFollowers){
-				table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
-				pos.following++;
-				pos.followers++
-			}else if(nameFollowing<nameFollowers){
-				table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
-				pos.following++
-			}else if(nameFollowing>nameFollowers){
-				table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
-				pos.followers++
-			}
-		}else if((io.following.length>=(pos.following+1))&&(io.followers.length<(pos.followers+1))){
-			var nameFollowing=io.following[pos.following];
-			var idFollowing=io.followingId[pos.following];
+	var idAll = $.unique($.merge($.merge([],io.followingId),io.followersId));
+	for(var i=0;i<idAll.length;i++){
+		var posFollowing = $.inArray(idAll[i],io.followingId);
+		var posFollowers = $.inArray(idAll[i],io.followersId);
+		if((posFollowing>=0)&&(posFollowers>=0)){
+			var nameFollowing=io.following[posFollowing];
+			var nameFollowers=io.followers[posFollowers];
+			var idFollowing=io.followingId[posFollowing];
+			var idFollowers=io.followersId[posFollowers];
+			table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';			
+		}else if((posFollowing>=0)&&(posFollowers<0)){
+			var nameFollowing=io.following[posFollowing];
+			var idFollowing=io.followingId[posFollowing];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
-			pos.following++
-		}else if((io.following.length<(pos.following+1))&&(io.followers.length>=(pos.followers+1))){
-			var nameFollowers=io.followers[pos.followers];
-			var idFollowers=io.followersId[pos.followers];
+		}else if((posFollowing<0)&&(posFollowers>=0)){
+			var nameFollowers=io.followers[posFollowers];
+			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
-			pos.followers++
-		}else{
-			loop=false
 		}
 	}
 	table+='</tbody></table>';
