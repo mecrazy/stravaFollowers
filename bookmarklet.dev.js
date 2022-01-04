@@ -290,17 +290,17 @@ function generateTable(io){
 		var posFollowing = $.inArray(io.mergeId[i],io.followingId);
 		var posFollowers = $.inArray(io.mergeId[i],io.followersId);
 		if((posFollowing>=0)&&(posFollowers>=0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + io.following.list[posFollowing][1].athlete.lastname;
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + ' ' + io.following.list[posFollowing][1].athlete.lastname;
+			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + ' ' + io.followers.list[posFollowers][1].athlete.lastname;
 			var idFollowing=io.followingId[posFollowing];
 			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';			
 		}else if((posFollowing>=0)&&(posFollowers<0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + io.following.list[posFollowing][1].athlete.lastname;
+			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + ' ' + io.following.list[posFollowing][1].athlete.lastname;
 			var idFollowing=io.followingId[posFollowing];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
 		}else if((posFollowing<0)&&(posFollowers>=0)){
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + ' ' + io.followers.list[posFollowers][1].athlete.lastname;
 			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
 		}
