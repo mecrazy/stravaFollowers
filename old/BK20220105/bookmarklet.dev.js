@@ -30,7 +30,7 @@ if(jqVer.$.match||jqVer.jQuery.match){
 	}
 }
 if(newJQ){
-	var scr=document.createElement("script");scr.src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js";
+	var scr=document.createElement("script");scr.src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js";
 	scr.onload=function(){func(jQuery.noConflict(true))};
 	document.body.appendChild(scr)
 }
@@ -57,7 +57,6 @@ style+='@-moz-keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style+='@keyframes blink{0% {opacity:0;}100% {opacity:1;}}';
 style+='.btn_xyz{margin:3px 0px;display:inline-block;padding:1px 5px;border-style:solid;border-width:1px;border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);text-shadow:0 1px 0 rgba(0,0,0,0.2);}';
 style+='#btn_toggle_link_xyz{color:#ffffff;background:#03A9F4;border-color:#0f9ada;}';
-style+='.table-body-xyz a{text-decoration:underline;}';
 style+='#btn_toggle_match_xyz,#btn_download_xyz{color:#454545;background:#eaeaea;border-color:#9c9c9c;}';
 style+='#btn_close_xyz{color:#ffffff;background:#fd9535;border-color:#da6202;}';
 style+='</style>';
@@ -169,7 +168,6 @@ if($('body').attr('data-event-xyz')!='on'){
 				var rowNum=i+1;
 				csv+=crlf+rowNum+dmt+'"'+lineArr.following[i]+'"'+dmt+'"'+lineArr.followers[i]+'"'+dmt+'https://www.strava.com/athletes/'+lineArr.id[i]
 			}
-			console.log(csv);
 			var link=document.createElement('a');
 			link.href=window.URL.createObjectURL(new Blob([csv]));
 			var filename=dateFormat.format(new Date(),'yyyyMMddhhmmss');
@@ -183,89 +181,68 @@ if($('body').attr('data-event-xyz')!='on'){
 
 function start(){
 	$.ajax({url:io.dashboard,dataType:'html'}).done(function(data){
-		var link=$(data).find('#athlete-profile').find('ul').find('a');
-		var countObj = {
-			"following":{
-				"count":Number(link.eq(0).find('b').text()),
-				"href":link.get(0).href,
-				"list":[],
-				"page":0,
-				"complete":false
-			},
-			"followers":{
-				"count":Number(link.eq(1).find('b').text()),
-				"href":link.get(1).href,
-				"list":[],
-				"page":0,
-				"complete":false
-			}
-		};
-		getList(countObj);
+		var link=$(data).find('#athlete-profile').find('a');
+		var athleteUrl=link.get(0).href;
+		var urlRegex=athleteUrl.match(/^(https?:\/\/.*?)\/athletes\/([0-9]+)$/i);
+		if(urlRegex.length>=3){io.user=urlRegex[2]}
+		io.base=athleteUrl+'/follows';
+		analyzeMain('following',io,1)
 	}).fail(function(jqXHR,textStatus,errorThrown){
 		console.log(jqXHR,textStatus,errorThrown);
 		alert('Failed to get data from "'+io.dashboard+'".')
 	})
 }
 
-function getList(DYNAMIC){
-		if(!DYNAMIC.following.complete){
-			DYNAMIC.following.page++;
-			$.ajax({url:DYNAMIC.following.href + '&page=' + DYNAMIC.following.page,dataType:'json'}).fail(function(){
-				console.log('error')
-			}).done(function(data){
-				if(data.follows.length > 0){
-					DYNAMIC.following.list = DYNAMIC.following.list.concat(data.follows);
-				}else{
-					DYNAMIC.following.complete = true;
+function analyzeMain(mode,io,page){
+	if(mode=='following'){
+		$('#blinking_text_xyz').text(strings[lang].analyzingFollowing)
+	}else if(mode=='followers'){
+		$('#blinking_text_xyz').text(strings[lang].analyzingFollowers)
+	}
+	var startUrl=io.base+'?type='+mode+'&page='+page;
+	$.ajax({url:startUrl,dataType:'html'}).done(function(data){
+		var pager=analyzePager(data);
+		$(data).find('.list-athletes').children().each(function(){
+			var name=$(this).find('div.avatar-athlete').attr('title');
+			var athleteId=$(this).attr('data-athlete-id');
+			io[mode].push(name);
+			io[mode+'Id'].push(athleteId);
+		});
+		var percentile = Math.floor((pager.current/pager.max)*100);
+		var lastFlg=((pager.max<=pager.current)&&(mode=='followers'));
+		$('#progressbar_inner_b_xyz').text(percentile+'%').animate({'width':percentile+'%'},function(){
+			if(lastFlg){complete(io)}
+		});
+		if(!lastFlg){
+			if(pager.max>pager.current){
+				page++;
+				analyzeMain(mode,io,page)
+			}else{
+				if(mode=='following'){
+					analyzeMain('followers',io,1)
 				}
-				var percentile = Math.floor(100 * (DYNAMIC.following.list.length/DYNAMIC.following.count));
-				$('#blinking_text_xyz').text(strings[lang].analyzingFollowing);
-				$('#progressbar_inner_b_xyz').text(percentile+'%').stop(true,true).animate({'width':percentile+'%'});
-				getList(DYNAMIC);
-			})
-		}else if(!DYNAMIC.followers.complete){
-			DYNAMIC.followers.page++;
-			$.ajax({url:DYNAMIC.followers.href + '&page=' + DYNAMIC.followers.page,dataType:'json'}).fail(function(){
-				console.log('error')
-			}).done(function(data){
-				if(data.follows.length > 0){
-					DYNAMIC.followers.list = DYNAMIC.followers.list.concat(data.follows);
-				}else{
-					DYNAMIC.followers.complete = true;
-				}
-				var percentile = Math.floor(100 * (DYNAMIC.followers.list.length/DYNAMIC.followers.count));
-				$('#blinking_text_xyz').text(strings[lang].analyzingFollowers);
-				$('#progressbar_inner_b_xyz').text(percentile+'%').stop(true,true).animate({'width':percentile+'%'});
-				getList(DYNAMIC);
-			})
-		}else{
-			dynamicToIO(DYNAMIC);
+			}
 		}
-
+	})
 }
 
-function dynamicToIO(DYNAMIC){
-	console.log(DYNAMIC);
-	DYNAMIC.following.list.sort(function(a, b){
-		return a[0].follow.follower_id - b[0].follow.follower_id;
+function analyzePager(html){
+	var pager={"min":1,"max":0,"current":0};
+	$(html).find('.pagination').eq(0).find('li').each(function(){
+		var page=-1;
+		var pageStr=$(this).find('a,span').text();
+		pageStr=pageStr.trim();
+		if(pageStr.match(/^[0-9]+$/)){
+			if($(this).find('a').length>0){
+				page=Number($(this).find('a').text())
+			}else if($(this).find('span').length > 0){
+				page=Number($(this).find('span').text())
+			}
+			pager["max"]=page;
+			if($(this).hasClass('active')){pager["current"]=page}
+		}
 	});
-	DYNAMIC.followers.list.sort(function(a, b){
-		return a[0].follow.following_id - b[0].follow.following_id;
-	});
-	DYNAMIC.mergeId = [];
-	DYNAMIC.followingId = [];
-	DYNAMIC.followersId = [];
-	for(var i=0;i<DYNAMIC.following.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].follow.following_id);
-		DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].follow.following_id);
-	}
-	for(var i=0;i<DYNAMIC.followers.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
-		DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
-	}
-	DYNAMIC.mergeId = Array.from(new Set(DYNAMIC.mergeId));
-	console.log(DYNAMIC);
-	complete(DYNAMIC);
+	return pager
 }
 
 function complete(io){
@@ -286,21 +263,22 @@ function generateTable(io){
 	table+='<tr><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].following+'</th><th class="cell-xyz" style="text-align:center;background-color:#b0e0e6;">'+strings[lang].followers+'</th></tr>';
 	table+='</thead>';
 	table+='<tbody class="table-body-xyz">';
-	for(var i=0;i<io.mergeId.length;i++){
-		var posFollowing = $.inArray(io.mergeId[i],io.followingId);
-		var posFollowers = $.inArray(io.mergeId[i],io.followersId);
+	var idAll = $.unique($.merge($.merge([],io.followingId),io.followersId));
+	for(var i=0;i<idAll.length;i++){
+		var posFollowing = $.inArray(idAll[i],io.followingId);
+		var posFollowers = $.inArray(idAll[i],io.followersId);
 		if((posFollowing>=0)&&(posFollowers>=0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + io.following.list[posFollowing][1].athlete.lastname;
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowing=io.following[posFollowing];
+			var nameFollowers=io.followers[posFollowers];
 			var idFollowing=io.followingId[posFollowing];
 			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';			
 		}else if((posFollowing>=0)&&(posFollowers<0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + io.following.list[posFollowing][1].athlete.lastname;
+			var nameFollowing=io.following[posFollowing];
 			var idFollowing=io.followingId[posFollowing];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
 		}else if((posFollowing<0)&&(posFollowers>=0)){
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowers=io.followers[posFollowers];
 			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
 		}
