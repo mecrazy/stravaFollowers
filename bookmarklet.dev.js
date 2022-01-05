@@ -155,8 +155,8 @@ if($('body').attr('data-event-xyz')!='on'){
 				var rowData={"following":$(this).find('td').eq(0).text(),"followers":$(this).find('td').eq(1).text(),"id":""};
 				rowData.following=rowData.following.replace('"','""');
 				rowData.followers=rowData.followers.replace('"','""');
-				if($(this).find('td').eq(0).attr("data-id")!=''){rowData.id=$(this).find('td').eq(0).attr("data-id")}
-				if($(this).find('td').eq(1).attr("data-id")!=''){rowData.id=$(this).find('td').eq(1).attr("data-id")}
+				if($(this).find('td').eq(0).attr("data-id")){rowData.id=$(this).find('td').eq(0).attr("data-id")}
+				if($(this).find('td').eq(1).attr("data-id")){rowData.id=$(this).find('td').eq(1).attr("data-id")}
 				lineArr.following.push(rowData.following);
 				lineArr.followers.push(rowData.followers);
 				lineArr.id.push(rowData.id)
@@ -245,7 +245,6 @@ function getList(DYNAMIC){
 }
 
 function dynamicToIO(DYNAMIC){
-	console.log(DYNAMIC);
 	DYNAMIC.following.list.sort(function(a, b){
 		return a[0].follow.follower_id - b[0].follow.follower_id;
 	});
