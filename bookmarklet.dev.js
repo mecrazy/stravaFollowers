@@ -64,10 +64,54 @@ style+='</style>';
 
 var lang=detectLang();
 var strings={
-	"en":{"starting":"Starting ....","analyzingFollowing":"Counting followings","analyzingFollowers":"Counting followers","following":"following","followers":"followers","btnToggleLink":"TOGGLE LINK","btnShowUnmatch":"SHOW UNMATCHED","btnShowAll":"SHOW ALL","btnDownloadCsv":"DOWNLOAD CSV","btnClose":"CLOSE"},
-	"ja":{"starting":"処理開始中 ....","analyzingFollowing":"あなたがフォローするユーザをカウント中","analyzingFollowers":"あなたをフォローするユーザをカウント中","following":"あなたがフォロー","followers":"あなたをフォロー","btnToggleLink":"リンクON/OFF","btnShowUnmatch":"不一致のみ表示","btnShowAll":"全員表示","btnDownloadCsv":"CSVをダウンロード","btnClose":"閉じる"},
-	"ru":{"starting":"начало ....","analyzingFollowing":"Подсчет голосов","analyzingFollowers":"Подсчет подписчиков","following":"следующих","followers":"последователей","btnToggleLink":"Вкл выкл связи","btnShowUnmatch":"ПОКАЖИТЕ НЕОПРЕДЕЛЕННЫЙ","btnShowAll":"ПОКАЗАТЬ ВСЕ","btnDownloadCsv":"СКАЧАТЬ CSV","btnClose":"ЗАКРЫТЬ"},
-	"zh":{"starting":"开始 ....","analyzingFollowing":"计数如下","analyzingFollowers":"计数粉丝","following":"如下","followers":"追随者","btnToggleLink":"链接开关","btnShowUnmatch":"显示不匹配的","btnShowAll":"显示所有","btnDownloadCsv":"下载CSV","btnClose":"关"},
+	"en":{
+		"starting":"Starting ....",
+		"analyzingFollowing":"Counting followings",
+		"analyzingFollowers":"Counting followers",
+		"following":"following",
+		"followers":"followers",
+		"btnToggleLink":"TOGGLE LINK",
+		"btnShowUnmatch":"SHOW UNMATCHED",
+		"btnShowAll":"SHOW ALL",
+		"btnDownloadCsv":"DOWNLOAD CSV",
+		"btnClose":"CLOSE"
+	},
+	"ja":{
+		"starting":"処理開始中 ....",
+		"analyzingFollowing":"あなたがフォローするユーザをカウント中",
+		"analyzingFollowers":"あなたをフォローするユーザをカウント中",
+		"following":"あなたがフォロー",
+		"followers":"あなたをフォロー",
+		"btnToggleLink":"リンクON/OFF",
+		"btnShowUnmatch":"不一致のみ表示",
+		"btnShowAll":"全員表示",
+		"btnDownloadCsv":"CSVをダウンロード",
+		"btnClose":"閉じる"
+	},
+	"ru":{
+		"starting":"начало ....",
+		"analyzingFollowing":"Подсчет голосов",
+		"analyzingFollowers":"Подсчет подписчиков",
+		"following":"следующих",
+		"followers":"последователей",
+		"btnToggleLink":"Вкл выкл связи",
+		"btnShowUnmatch":"ПОКАЖИТЕ НЕОПРЕДЕЛЕННЫЙ",
+		"btnShowAll":"ПОКАЗАТЬ ВСЕ",
+		"btnDownloadCsv":"СКАЧАТЬ CSV",
+		"btnClose":"ЗАКРЫТЬ"
+	},
+	"zh":{
+		"starting":"开始 ....",
+		"analyzingFollowing":"计数如下",
+		"analyzingFollowers":"计数粉丝",
+		"following":"如下",
+		"followers":"追随者",
+		"btnToggleLink":"链接开关",
+		"btnShowUnmatch":"显示不匹配的",
+		"btnShowAll":"显示所有",
+		"btnDownloadCsv":"下载CSV",
+		"btnClose":"关"
+	},
 };
 
 if($('#cutsom_style_xyz').length>0){$('#cutsom_style_xyz').remove()}
