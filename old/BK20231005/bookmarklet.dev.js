@@ -41,7 +41,7 @@ if(newJQ){
 
 var style ='<style type="text/css" id="cutsom_style_xyz">';
 style+='#pregress_xyz{display:none;background-color:#000000;color:#ffffff;opacity:0.4;position:fixed;top:0px;left:0px;right:0px;bottom:0px;height:100%;width:100%;z-index:99901}';
-style+='#mylist_xyz{display:none;box-shadow:-3px 6px 5px;width:48%;height:80%;overflow-y:scroll;z-index:9999;position:fixed;top:10px;right:10px;background-color:#ffffff;}';
+style+='#mylist_xyz{display:none;box-shadow:-3px 6px 5px;width:48%;height:70%;overflow-y:scroll;z-index:9999;position:fixed;top:10px;right:10px;background-color:#ffffff;}';
 style+='.cell-xyz{margin:0px;padding:3px 5px;border-style:solid;border-color:#afafaf;border-width:1px 0px 0px 1px;}';
 style+='.cell-xyz-blank{background-color:#eaeaea;}';
 style+='.table-xyz{margin:0px;padding:0px;background-color:#ffffff;border-collapse:collapse;border-style:solid;border-color:#afafaf;border-width:0px 1px 1px 0px;width:100%;}';
@@ -227,26 +227,24 @@ if($('body').attr('data-event-xyz')!='on'){
 
 function start(){
 	$.ajax({url:io.dashboard,dataType:'html'}).done(function(data){
-			var props=JSON.parse($(data).find('div.dashboard-mfe').eq(0).attr('data-react-props'));
-			console.log(props);
-			var myId = props.appContext.feedProps.currentAthleteId;
-			var countObj = {
-				"following":{
-					"count":props.appContext.followingCount,
-					"href":'https://www.strava.com/athletes/' + myId + '/follows?type=following',
-					"list":[],
-					"page":0,
-					"complete":false
-				},
-				"followers":{
-					"count":props.appContext.followersCount,
-					"href":'https://www.strava.com/athletes/' + myId + '/follows?type=followers',
-					"list":[],
-					"page":0,
-					"complete":false
-				}
-			};
-			getList(countObj);
+		var link=$(data).find('#athlete-profile').find('ul').find('a');
+		var countObj = {
+			"following":{
+				"count":Number(link.eq(0).find('b').text()),
+				"href":link.get(0).href,
+				"list":[],
+				"page":0,
+				"complete":false
+			},
+			"followers":{
+				"count":Number(link.eq(1).find('b').text()),
+				"href":link.get(1).href,
+				"list":[],
+				"page":0,
+				"complete":false
+			}
+		};
+		getList(countObj);
 	}).fail(function(jqXHR,textStatus,errorThrown){
 		console.log(jqXHR,textStatus,errorThrown);
 		alert('Failed to get data from "'+io.dashboard+'".')
