@@ -227,26 +227,25 @@ if($('body').attr('data-event-xyz')!='on'){
 
 function start(){
 	$.ajax({url:io.dashboard,dataType:'html'}).done(function(data){
-			var props=JSON.parse($(data).find('div.dashboard-mfe').eq(0).attr('data-react-props'));
-			console.log(props);
-			var myId = props.appContext.feedProps.currentAthleteId;
-			var countObj = {
-				"following":{
-					"count":props.appContext.followingCount,
-					"href":'https://www.strava.com/athletes/' + myId + '/follows?type=following',
-					"list":[],
-					"page":0,
-					"complete":false
-				},
-				"followers":{
-					"count":props.appContext.followersCount,
-					"href":'https://www.strava.com/athletes/' + myId + '/follows?type=followers',
-					"list":[],
-					"page":0,
-					"complete":false
-				}
-			};
-			getList(countObj);
+		var props=JSON.parse($(data).find('div.dashboard-mfe').eq(0).attr('data-react-props'));
+		var myId = props.appContext.feedProps.currentAthleteId;
+		var countObj = {
+			"following":{
+				"count":props.appContext.followingCount,
+				"href":'https://www.strava.com/athletes/' + myId + '/follows?type=following',
+				"list":[],
+				"page":0,
+				"complete":false
+			},
+			"followers":{
+				"count":props.appContext.followersCount,
+				"href":'https://www.strava.com/athletes/' + myId + '/follows?type=followers',
+				"list":[],
+				"page":0,
+				"complete":false
+			}
+		};
+		getList(countObj);
 	}).fail(function(jqXHR,textStatus,errorThrown){
 		console.log(jqXHR,textStatus,errorThrown);
 		alert('Failed to get data from "'+io.dashboard+'".')
