@@ -309,7 +309,6 @@ function dynamicToIO(DYNAMIC){
 	}
 	DYNAMIC.mergeId = Array.from(new Set(DYNAMIC.mergeId));
 	console.log(DYNAMIC);
-    gDYANAMIC=DYNAMIC;
 	complete(DYNAMIC);
 }
 
