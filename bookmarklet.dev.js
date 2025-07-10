@@ -291,24 +291,25 @@ function getList(DYNAMIC){
 
 function dynamicToIO(DYNAMIC){
 	DYNAMIC.following.list.sort(function(a, b){
-		return a[0].follow.follower_id - b[0].follow.follower_id;
+		return a[0].followee_id - b[0].followee_id;
 	});
 	DYNAMIC.followers.list.sort(function(a, b){
-		return a[0].follow.following_id - b[0].follow.following_id;
+		return a[0].follower_id - b[0].follower_id;
 	});
 	DYNAMIC.mergeId = [];
 	DYNAMIC.followingId = [];
 	DYNAMIC.followersId = [];
 	for(var i=0;i<DYNAMIC.following.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].follow.following_id);
-		DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].follow.following_id);
+		DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].followee_id);
+		DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].followee_id);
 	}
 	for(var i=0;i<DYNAMIC.followers.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
-		DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
+		DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follower_id);
+		DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follower_id);
 	}
 	DYNAMIC.mergeId = Array.from(new Set(DYNAMIC.mergeId));
 	console.log(DYNAMIC);
+    gDYANAMIC=DYNAMIC;
 	complete(DYNAMIC);
 }
 
