@@ -291,21 +291,27 @@ function getList(DYNAMIC){
 
 function dynamicToIO(DYNAMIC){
 	DYNAMIC.following.list.sort(function(a, b){
-		return a[0].follow.follower_id - b[0].follow.follower_id;
+		return a[0].follow_status.localeCompare(b[0].follow_status);
 	});
 	DYNAMIC.followers.list.sort(function(a, b){
-		return a[0].follow.following_id - b[0].follow.following_id;
+		return a[0].follow_status.localeCompare(b[0].follow_status);
 	});
 	DYNAMIC.mergeId = [];
 	DYNAMIC.followingId = [];
 	DYNAMIC.followersId = [];
+	debugger
 	for(var i=0;i<DYNAMIC.following.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].follow.following_id);
-		DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].follow.following_id);
+		if(DYNAMIC.following.list[i][0].follow_status === 'accepted'){
+			DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].followee_id);
+			DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].followee_id);
+		}
 	}
+	debugger
 	for(var i=0;i<DYNAMIC.followers.list.length;i++){
-		DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
-		DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follow.follower_id);
+		if(DYNAMIC.followers.list[i][0].follow_status === 'accepted'){
+			DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follower_id);
+			DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follower_id);
+		}
 	}
 	DYNAMIC.mergeId = Array.from(new Set(DYNAMIC.mergeId));
 	console.log(DYNAMIC);
