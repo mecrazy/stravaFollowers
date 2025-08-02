@@ -299,14 +299,14 @@ function dynamicToIO(DYNAMIC){
 	DYNAMIC.mergeId = [];
 	DYNAMIC.followingId = [];
 	DYNAMIC.followersId = [];
-	debugger
+
 	for(var i=0;i<DYNAMIC.following.list.length;i++){
 		if(DYNAMIC.following.list[i][0].follow_status === 'accepted'){
 			DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].followee_id);
 			DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].followee_id);
 		}
 	}
-	debugger
+
 	for(var i=0;i<DYNAMIC.followers.list.length;i++){
 		if(DYNAMIC.followers.list[i][0].follow_status === 'accepted'){
 			DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follower_id);
