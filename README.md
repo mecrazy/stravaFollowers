@@ -6,7 +6,7 @@ This is a bookmarklet for Strava. A bookmarklet is a bookmark that runs a JavaSc
 Installation:
 Drag below button to the bookmarks bar:
 
-For installation instructions, please visit the [Installation Page](https://tvard.github.io/stravaFollowers/).
+For installation instructions, please visit the [Installation Page](https://mecrazy.github.io/stravaFollowers/).
 
 ### Functions:
 
