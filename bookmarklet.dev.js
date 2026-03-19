@@ -226,9 +226,27 @@ if($('body').attr('data-event-xyz')!='on'){
 }
 
 function start(){
+	// Get athlete ID from the current page's already-rendered DOM instead of the AJAX response,
+	// because the server may return different HTML for XHR requests (omitting inline scripts).
+	var myId = null;
+	var navEl = document.querySelector('a.nav-link.accessible-nav-link');
+	if(navEl){
+		var navMatch = navEl.getAttribute('href').match(/\/athletes\/(\d+)/);
+		if(navMatch) myId = navMatch[1];
+	}
+	if(!myId){
+		// Fallback: search script content in the current page
+		var pageText = document.documentElement.innerHTML;
+		var pageMatch = pageText.match(/athlete_id:\s*(\d+)/);
+		if(pageMatch) myId = pageMatch[1];
+	}
+	if(!myId){
+		alert('Failed to get athlete ID.');
+		return;
+	}
+	// Fetch the dashboard only to obtain followingCount and followersCount for the progress bar
 	$.ajax({url:io.dashboard,dataType:'html'}).done(function(data){
 		var props=JSON.parse($(data).find('div.dashboard-mfe').eq(0).attr('data-react-props'));
-		var myId = props.appContext.feedProps.currentAthleteId;
 		var countObj = {
 			"following":{
 				"count":props.appContext.followingCount,
@@ -255,11 +273,18 @@ function start(){
 function getList(DYNAMIC){
 		if(!DYNAMIC.following.complete){
 			DYNAMIC.following.page++;
-			$.ajax({url:DYNAMIC.following.href + '&page=' + DYNAMIC.following.page,dataType:'json'}).fail(function(){
+			// The follows endpoint now returns HTML instead of JSON; parse the athlete list from the DOM
+			$.ajax({url:DYNAMIC.following.href + '&page=' + DYNAMIC.following.page,dataType:'html'}).fail(function(){
 				console.log('error')
 			}).done(function(data){
-				if(data.follows.length > 0){
-					DYNAMIC.following.list = DYNAMIC.following.list.concat(data.follows);
+				var items=[];
+				$(data).find('li[data-athlete-id]').each(function(){
+					var athleteId=$(this).attr('data-athlete-id');
+					var name=$(this).find('.text-callout a').text().trim();
+					items.push({id:athleteId,name:name});
+				});
+				if(items.length > 0){
+					DYNAMIC.following.list = DYNAMIC.following.list.concat(items);
 				}else{
 					DYNAMIC.following.complete = true;
 				}
@@ -270,11 +295,17 @@ function getList(DYNAMIC){
 			})
 		}else if(!DYNAMIC.followers.complete){
 			DYNAMIC.followers.page++;
-			$.ajax({url:DYNAMIC.followers.href + '&page=' + DYNAMIC.followers.page,dataType:'json'}).fail(function(){
+			$.ajax({url:DYNAMIC.followers.href + '&page=' + DYNAMIC.followers.page,dataType:'html'}).fail(function(){
 				console.log('error')
 			}).done(function(data){
-				if(data.follows.length > 0){
-					DYNAMIC.followers.list = DYNAMIC.followers.list.concat(data.follows);
+				var items=[];
+				$(data).find('li[data-athlete-id]').each(function(){
+					var athleteId=$(this).attr('data-athlete-id');
+					var name=$(this).find('.text-callout a').text().trim();
+					items.push({id:athleteId,name:name});
+				});
+				if(items.length > 0){
+					DYNAMIC.followers.list = DYNAMIC.followers.list.concat(items);
 				}else{
 					DYNAMIC.followers.complete = true;
 				}
@@ -290,28 +321,26 @@ function getList(DYNAMIC){
 }
 
 function dynamicToIO(DYNAMIC){
+	// Sort by name since follow_status is no longer available in the HTML response
 	DYNAMIC.following.list.sort(function(a, b){
-		return a[0].follow_status.localeCompare(b[0].follow_status);
+		return a.name.localeCompare(b.name);
 	});
 	DYNAMIC.followers.list.sort(function(a, b){
-		return a[0].follow_status.localeCompare(b[0].follow_status);
+		return a.name.localeCompare(b.name);
 	});
 	DYNAMIC.mergeId = [];
 	DYNAMIC.followingId = [];
 	DYNAMIC.followersId = [];
 
+	// HTML pages only list active follows, so no follow_status filter is needed
 	for(var i=0;i<DYNAMIC.following.list.length;i++){
-		if(DYNAMIC.following.list[i][0].follow_status === 'accepted'){
-			DYNAMIC.mergeId.push(DYNAMIC.following.list[i][0].followee_id);
-			DYNAMIC.followingId.push(DYNAMIC.following.list[i][0].followee_id);
-		}
+		DYNAMIC.mergeId.push(DYNAMIC.following.list[i].id);
+		DYNAMIC.followingId.push(DYNAMIC.following.list[i].id);
 	}
 
 	for(var i=0;i<DYNAMIC.followers.list.length;i++){
-		if(DYNAMIC.followers.list[i][0].follow_status === 'accepted'){
-			DYNAMIC.mergeId.push(DYNAMIC.followers.list[i][0].follower_id);
-			DYNAMIC.followersId.push(DYNAMIC.followers.list[i][0].follower_id);
-		}
+		DYNAMIC.mergeId.push(DYNAMIC.followers.list[i].id);
+		DYNAMIC.followersId.push(DYNAMIC.followers.list[i].id);
 	}
 	DYNAMIC.mergeId = Array.from(new Set(DYNAMIC.mergeId));
 	console.log(DYNAMIC);
@@ -340,17 +369,17 @@ function generateTable(io){
 		var posFollowing = $.inArray(io.mergeId[i],io.followingId);
 		var posFollowers = $.inArray(io.mergeId[i],io.followersId);
 		if((posFollowing>=0)&&(posFollowers>=0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + ' ' + io.following.list[posFollowing][1].athlete.lastname;
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + ' ' + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowing=io.following.list[posFollowing].name;
+			var nameFollowers=io.followers.list[posFollowers].name;
 			var idFollowing=io.followingId[posFollowing];
 			var idFollowers=io.followersId[posFollowers];
-			table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';			
+			table+='<tr class="match-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
 		}else if((posFollowing>=0)&&(posFollowers<0)){
-			var nameFollowing=io.following.list[posFollowing][1].athlete.firstname + ' ' + io.following.list[posFollowing][1].athlete.lastname;
+			var nameFollowing=io.following.list[posFollowing].name;
 			var idFollowing=io.followingId[posFollowing];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz" data-id="'+idFollowing+'">'+nameFollowing+'</td><td class="cell-xyz cell-xyz-blank"></td></tr>';
 		}else if((posFollowing<0)&&(posFollowers>=0)){
-			var nameFollowers=io.followers.list[posFollowers][1].athlete.firstname + ' ' + io.followers.list[posFollowers][1].athlete.lastname;
+			var nameFollowers=io.followers.list[posFollowers].name;
 			var idFollowers=io.followersId[posFollowers];
 			table+='<tr class="unmatch-xyz"><td class="cell-xyz cell-xyz-blank"></td><td class="cell-xyz" data-id="'+idFollowers+'">'+nameFollowers+'</td></tr>';
 		}
